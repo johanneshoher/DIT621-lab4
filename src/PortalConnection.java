@@ -39,8 +39,13 @@ public class PortalConnection {
     public String register(String student, String courseCode){
         try {
             //String string = String.format("INSERT INTO Registrations r VALUES (%s , %2d"), student, courseCode);
-            PreparedStatement p = conn.prepareStatement("INSERT INTO Registrations r VALUES(" + student + ", " + courseCode +")");
-            p.executeQuery();
+            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Registrations r VALUES(" + student + ", " + courseCode +")");
+            pstmt.executeQuery();
+
+            // Close the resources
+            conn.close();
+            pstmt.close();
+
             return "{\"success\":True}";
         } catch (SQLException e){
             return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
@@ -51,8 +56,14 @@ public class PortalConnection {
     public String unregister(String student, String courseCode) {
 
         try {
-            PreparedStatement p = conn.prepareStatement("DELETE FROM Registrations r WHERE r.student = " + student + " AND r.course =  " + courseCode);
-            p.executeQuery();
+            PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Registrations r WHERE r.student = " + student + " AND r.course =  " + courseCode);
+            pstmt.executeQuery();
+
+            //Close the resources
+            conn.close();
+            pstmt.close();
+
+
             return "{\"success\":True}";
         } catch (SQLException e) {
             return "{\"success\":false, \"error\":\"" + getError(e) + "\"}";
