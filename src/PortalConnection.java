@@ -37,9 +37,15 @@ public class PortalConnection {
 
     // Register a student on a course, returns a tiny JSON document (as a String)
     public String register(String student, String courseCode){
-      
-      // placeholder, remove along with this comment. 
-      return "{\"success\":false, \"error\":\"Registration is not implemented yet :(\"}";
+        try {
+            //String string = String.format("INSERT INTO Registrations r VALUES (%s , %2d"), student, courseCode);
+            conn.prepareStatement("INSERT INTO Registrations r VALUES(" + student + ", " + courseCode +")");
+            return "{\"success\":True}";
+        } catch (SQLException e){
+            return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
+        }
+      // placeholder, remove along with this comment.
+      //return "{\"success\":false, \"error\":\"Registration is not implemented yet :(\"}";
       
       // Here's a bit of useful code, use it or delete it 
       // } catch (SQLException e) {
