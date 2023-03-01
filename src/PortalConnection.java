@@ -6,7 +6,7 @@ public class PortalConnection {
 
     // Set this to e.g. "portal" if you have created a database named portal
     // Leave it blank to use the default database of your database user
-    static final String DBNAME = "";
+    static final String DBNAME = "lab1";
     // For connecting to the portal database on your local machine
     static final String DATABASE = "jdbc:postgresql://localhost/"+DBNAME;
     static final String USERNAME = "postgres";
