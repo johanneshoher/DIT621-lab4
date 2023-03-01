@@ -39,25 +39,20 @@ public class PortalConnection {
     public String register(String student, String courseCode){
         try {
             //String string = String.format("INSERT INTO Registrations r VALUES (%s , %2d"), student, courseCode);
-            conn.prepareStatement("INSERT INTO Registrations r VALUES(" + student + ", " + courseCode +")");
+            PreparedStatement p = conn.prepareStatement("INSERT INTO Registrations r VALUES(" + student + ", " + courseCode +")");
+            p.executeQuery();
             return "{\"success\":True}";
         } catch (SQLException e){
             return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
         }
-      // placeholder, remove along with this comment.
-      //return "{\"success\":false, \"error\":\"Registration is not implemented yet :(\"}";
-      
-      // Here's a bit of useful code, use it or delete it 
-      // } catch (SQLException e) {
-      //    return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
-      // }     
     }
 
     // Unregister a student from a course, returns a tiny JSON document (as a String)
     public String unregister(String student, String courseCode) {
 
         try {
-            conn.prepareStatement("DELETE FROM Registrations r WHERE r.student = " + student + " AND r.course =  " + courseCode + "" );
+            PreparedStatement p = conn.prepareStatement("DELETE FROM Registrations r WHERE r.student = " + student + " AND r.course =  " + courseCode);
+            p.executeQuery();
             return "{\"success\":True}";
         } catch (SQLException e) {
             return "{\"success\":false, \"error\":\"" + getError(e) + "\"}";
