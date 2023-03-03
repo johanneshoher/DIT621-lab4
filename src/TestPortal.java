@@ -13,20 +13,17 @@ public class TestPortal {
          // Use println instead of prettyPrint to get more compact output (if your raw JSON is already readable)
 
 
-          System.out.println("Unregister student:");
+          System.out.println("register student:");
+          System.out.println(c.register("7777777777", "CCC111"));
+          pause();
+
+          prettyPrint(c.getInfo("2222222222"));
+
+          System.out.println("Unregister student:"); // SUPPOSED TO FAIL
           System.out.println(c.unregister("2222222222", "CCC333"));
           pause();
           prettyPrint(c.getInfo("2222222222"));
           pause();
-
-
-
-          System.out.println("register student:");
-          System.out.println(c.register("2222222222", "CCC333"));
-          pause();
-
-          prettyPrint(c.getInfo("2222222222"));
-
 
 
       

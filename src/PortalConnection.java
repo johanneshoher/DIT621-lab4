@@ -39,8 +39,12 @@ public class PortalConnection {
     public String register(String student, String courseCode){
         try {
             //String string = String.format("INSERT INTO Registrations r VALUES (%s , %2d"), student, courseCode);
-            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Registrations r VALUES(" + student + ", " + courseCode +")");
+            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Registrations VALUES(?, ?)");
+            pstmt.setString(1, student);
+
+            pstmt.setString(2, courseCode);
             pstmt.executeQuery();
+            pstmt.executeUpdate();
 
             // Close the resources
             conn.close();
