@@ -43,12 +43,9 @@ public class PortalConnection {
                 pstmt.setString(1, student);
                 pstmt.setString(2, courseCode);
 
-                int r = pstmt.executeUpdate();
+                //int r = pstmt.executeUpdate();
                 System.out.println("INSERTED " + student + " TO " + courseCode + " IN Registrations.");
-
-                // Close the resources
-                //conn.close();
-                //pstmt.close();
+                pstmt.close();
 
             return "{\"success\":True}";
         } catch (SQLException e){
@@ -65,14 +62,12 @@ public class PortalConnection {
                 pstmt.setString(1, student);
                 pstmt.setString(2, courseCode);
                 int r = pstmt.executeUpdate();
+                if (r == 0){
+                    return "{\"success\":false, \"error\":\" Couldn't find " + student +
+                            " Registered or Waiting " + courseCode + "}";
+                }
                 System.out.println("DELETED " + student + " FROM " + courseCode + " IN Registrations.");
-
-                // Close the resources
-                //conn.close();
-                //pstmt.close();
-
-
-
+            pstmt.close();
 
             return "{\"success\":True}";
         } catch (SQLException e) {
