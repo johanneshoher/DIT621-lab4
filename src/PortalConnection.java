@@ -37,18 +37,18 @@ public class PortalConnection {
 
     // Register a student on a course, returns a tiny JSON document (as a String)
     public String register(String student, String courseCode){
-        try {
+        try (PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Registrations VALUES(?, ?)");){
             //String string = String.format("INSERT INTO Registrations r VALUES (%s , %2d"), student, courseCode);
-            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Registrations VALUES(?, ?)");
-            pstmt.setString(1, student);
 
-            pstmt.setString(2, courseCode);
-            pstmt.executeQuery();
-            pstmt.executeUpdate();
+                pstmt.setString(1, student);
+                pstmt.setString(2, courseCode);
 
-            // Close the resources
-            conn.close();
-            pstmt.close();
+                int r = pstmt.executeUpdate();
+                System.out.println("INSERTED " + student + " TO " + courseCode + " IN Registrations.");
+
+                // Close the resources
+                //conn.close();
+                //pstmt.close();
 
             return "{\"success\":True}";
         } catch (SQLException e){
@@ -59,13 +59,19 @@ public class PortalConnection {
     // Unregister a student from a course, returns a tiny JSON document (as a String)
     public String unregister(String student, String courseCode) {
 
-        try {
-            PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Registrations r WHERE r.student = " + student + " AND r.course =  " + courseCode);
-            pstmt.executeQuery();
+        try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Registrations r " +
+                "WHERE r.student = ? AND r.course = ?");){
 
-            //Close the resources
-            conn.close();
-            pstmt.close();
+                pstmt.setString(1, student);
+                pstmt.setString(2, courseCode);
+                int r = pstmt.executeUpdate();
+                System.out.println("DELETED " + student + " FROM " + courseCode + " IN Registrations.");
+
+                // Close the resources
+                //conn.close();
+                //pstmt.close();
+
+
 
 
             return "{\"success\":True}";
