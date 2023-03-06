@@ -43,15 +43,19 @@ public class PortalConnection {
                 pstmt.setString(1, student);
                 pstmt.setString(2, courseCode);
 
-                int r = pstmt.executeUpdate();
-                if(r > 0)
-                    System.out.println("INSERTED " + student + " TO " + courseCode + " IN Registrations.");
-                else
-                    System.out.println("User was not inserted, unknown error.");
 
+
+
+            int rs = pstmt.executeUpdate();
+
+            if(rs > 0){
+                System.out.println("INSERTED " + student + " TO " + courseCode + " IN Registrations.");
                 pstmt.close();
+                return "{\"success\":true}";
+            }
+            else
+                return "{\"student\":false, \"error\":\"does not exist\"}";
 
-            return "{\"success\":True}";
         } catch (SQLException e){
             return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
         }
@@ -65,15 +69,31 @@ public class PortalConnection {
 
                 pstmt.setString(1, student);
                 pstmt.setString(2, courseCode);
+
                 int r = pstmt.executeUpdate();
                 if (r == 0){
-                    return "{\"success\":false, \"error\":\" Couldn't find " + student +
-                            " Registered or Waiting " + courseCode + "}";
+                    return "{\"success\":false, \"error\":\"" + "Couldn't find student as registered or waiting" + "\"}";
                 }
-                System.out.println("DELETED " + student + " FROM " + courseCode + " IN Registrations.");
-            pstmt.close();
+                else{
+                    System.out.println("DELETED " + student + " FROM " + courseCode + " IN Registrations.");
+                    pstmt.close();
+                    return "{\"success\":true}";
+                }
 
-            return "{\"success\":True}";
+/*
+            ResultSet rs = pstmt.executeQuery();
+
+            if(rs.next()){
+                System.out.println("DELETED " + student + " FROM " + courseCode + " IN Registrations.");
+                pstmt.close();
+                return "{\"success\":True}";
+                return rs.getString("jsondata");
+            }
+            else
+                return "{\"student\":\"does not exist :(\"}";
+
+
+ */
         } catch (SQLException e) {
             return "{\"success\":false, \"error\":\"" + getError(e) + "\"}";
         }
