@@ -84,8 +84,16 @@ public class TestPortal {
           pause();
 
           //Unregister with the SQL injection you introduced, causing all (or almost all?) registrations to disappear.
-          //TODO: CREATE THE SQL INJECTION THAT SUPPLIES THE ABOVE REQUIREMENT
+          System.out.println(c.unregister("4444444444", "'1' = '1'" ));
 
+          System.out.println(c.getInfo("1111111111"));
+          System.out.println(c.getInfo("2222222222"));
+          System.out.println(c.getInfo("3333333333"));
+          System.out.println(c.getInfo("4444444444"));
+          System.out.println(c.getInfo("5555555555"));
+          System.out.println(c.getInfo("6666666666"));
+          System.out.println(c.getInfo("7777777777"));
+          
 
 
 
