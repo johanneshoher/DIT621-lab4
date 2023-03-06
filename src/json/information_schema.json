@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Student iformation",
+  "title": "Student information",
   "type": "object",
   "required": [
     "student",
@@ -29,13 +29,14 @@
     },
     "login": {
       "type": "string",
-      "title": "The univerity issued computer login"
+      "title": "The University issued computer login"
     },
     "program": {
       "type": "string",
+      "title": "The Program a student is associated with"
     },
     "branch": {
-      "anyOf":[{"type": "string"},{"type": "null"}],
+      "anyOf":[{"type": "string"},{"type": "null"}]
     },
     "finished": {
       "type": "array",

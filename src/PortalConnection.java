@@ -37,14 +37,18 @@ public class PortalConnection {
 
     // Register a student on a course, returns a tiny JSON document (as a String)
     public String register(String student, String courseCode){
-        try (PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Registrations VALUES(?, ?)");){
-            //String string = String.format("INSERT INTO Registrations r VALUES (%s , %2d"), student, courseCode);
+        try (PreparedStatement pstmt = conn.prepareStatement(
+                "INSERT INTO Registrations VALUES(?, ?)");){
 
                 pstmt.setString(1, student);
                 pstmt.setString(2, courseCode);
 
-                //int r = pstmt.executeUpdate();
-                System.out.println("INSERTED " + student + " TO " + courseCode + " IN Registrations.");
+                int r = pstmt.executeUpdate();
+                if(r > 0)
+                    System.out.println("INSERTED " + student + " TO " + courseCode + " IN Registrations.");
+                else
+                    System.out.println("User was not inserted, unknown error.");
+
                 pstmt.close();
 
             return "{\"success\":True}";
@@ -78,22 +82,94 @@ public class PortalConnection {
 
     // Return a JSON document containing lots of information about a student, it should validate against the schema found in information_schema.json
     public String getInfo(String student) throws SQLException{
-        
         try(PreparedStatement st = conn.prepareStatement(
+                "WITH CourseAndName AS \n" +
+                        "(SELECT code, name FROM Courses),\n" +
+                        "FinishedCoursesAgg AS\n" +
+                        "(SELECT f.student,\n" +
+                        "       json_agg(\n" +
+                        "        json_build_object(\n" +
+                        "        'course', cn.name,\n" +
+                        "        'code', cn.code,\n" +
+                        "        'credits', credits,\n" +
+                        "        'grade', grade\n" +
+                        "            ))\n" +
+                        "        AS courses\n" +
+                        "        FROM FinishedCourses f\n" +
+                        "        JOIN CourseAndName cn \n" +
+                        "        ON f.course = cn.code\n" +
+                        "        GROUP BY f.student\n" +
+                        "        ORDER BY f.student\n" +
+                        "    ),\n" +
+                        "RegisteredCoursesAgg AS \n" +
+                        "(SELECT r.student,\n" +
+                        "        json_agg(\n" +
+                        "        json_build_object(\n" +
+                        "        'course', cn.name,\n" +
+                        "        'code', cn.code,\n" +
+                        "        'status', r.status,\n" +
+                        "        'position', CASE\n" +
+                        "                        WHEN r.status = 'registered' THEN 0\n" +
+                        "                        WHEN r.status = 'waiting' THEN c.place\n" +
+                        "                    END\n" +
+                        "                    ))\n" +
+                        "        AS courses\n" +
+                        "        FROM Registrations r \n" +
+                        "        LEFT JOIN CourseQueuePositions c \n" +
+                        "        ON r.course = c.course\n" +
+                        "        AND r.student = c.student\n" +
+                        "        JOIN CourseAndName cn ON r.course = cn.code\n" +
+                        "        GROUP BY r.student\n" +
+                        "        ORDER BY r.student\n" +
+                        "    )\n" +
+                        "SELECT DISTINCT ON (si.student)\n" +
+                        "    json_build_object(\n" +
+                        "        'student', si.student,\n" +
+                        "        'name', si.name,\n" +
+                        "        'login', si.login,\n" +
+                        "        'program', si.program,\n" +
+                        "        'branch', si.branch,\n" +
+                        "        'finished', COALESCE(fc.courses, '[]' :: json),\n" +
+                        "        'registered', COALESCE(rc.courses, '[]' :: json),\n" +
+                        "        'seminarCourses', si.seminarCoursePass,\n" +
+                        "        'mathCredits', si.mathCredits,\n" +
+                        "        'researchCredits', si.researchCredits,\n" +
+                        "        'totalCredits', si.totalCredits,\n" +
+                        "        'canGraduate', si.canGraduate\n" +
+                        "    )\n" +
+                        "AS jsondata FROM studentInformation si \n" +
+                        "LEFT JOIN FinishedCoursesAgg fc ON si.student = fc.student\n" +
+                        "LEFT JOIN RegisteredCoursesAgg rc ON si.student = rc.student\n" +
+                        "WHERE si.student = ?\n" +
+                        "ORDER BY si.student \n");){
+            st.setString(1, student);
+
+            ResultSet rs = st.executeQuery();
+
+            if(rs.next())
+                return rs.getString("jsondata");
+            else
+                return "{\"student\":\"does not exist :(\"}";
+        }
+        /*
+        try(PreparedStatement st = conn.prepareStatement(
+
             // replace this with something more useful
             "SELECT jsonb_build_object('student',idnr,'name',name) AS jsondata FROM BasicInformation WHERE idnr=?"
             );){
-            
+
             st.setString(1, student);
-            
+
             ResultSet rs = st.executeQuery();
-            
+
             if(rs.next())
               return rs.getString("jsondata");
             else
-              return "{\"student\":\"does not exist :(\"}"; 
-            
-        } 
+              return "{\"student\":\"does not exist :(\"}";
+
+        }
+
+         */
     }
 
     // This is a hack to turn an SQLException into a JSON string error message. No need to change.
