@@ -177,9 +177,6 @@ INSERT INTO Courses VALUES ('CCC999','C9',20,'Dep1');
 INSERT INTO Courses VALUES ('CCC000','C0',20,'Dep1');
 INSERT INTO Courses VALUES ('CCC123','C123',20,'Dep1');
 
-INSERT INTO Courses VALUES ('CCC456','C456',20,'Dep1');
-
-
 INSERT INTO Prerequisites VALUES ('CCC123','CCC111');
 
 
@@ -191,8 +188,6 @@ INSERT INTO LimitedCourses VALUES ('CCC777',1);
 INSERT INTO LimitedCourses VALUES ('CCC888',1);
 INSERT INTO LimitedCourses VALUES ('CCC999',4);
 INSERT INTO LimitedCourses VALUES ('CCC000',1);
-INSERT INTO LimitedCourses VALUES ('CCC456', 1);
-
 
 
 
@@ -239,7 +234,6 @@ INSERT INTO Registered VALUES ('1111111111','CCC111');
 INSERT INTO Registered VALUES ('1111111111','CCC222');
 INSERT INTO Registered VALUES ('5555555555','CCC222');
 INSERT INTO Registered VALUES ('2222222222','CCC222');
-INSERT INTO Registered VALUES ('5555555555','CCC444');
 INSERT INTO Registered VALUES ('7777777777','CCC444');
 
 
@@ -255,9 +249,6 @@ INSERT INTO Registered VALUES ('3333333333','CCC999');
 INSERT INTO Registered VALUES ('5555555555','CCC888');
 
 INSERT INTO Registered VALUES ('5555555555','CCC000');
-
-INSERT INTO Registered VALUES ('5555555555','CCC456');
-INSERT INTO Registered VALUES ('4444444444','CCC456');
 
 
 INSERT INTO Taken VALUES('4444444444','CCC111','5');
@@ -283,8 +274,6 @@ INSERT INTO WaitingList VALUES('5555555555','CCC999',2);
 INSERT INTO WaitingList VALUES('6666666666','CCC999',3);
 
 INSERT INTO WaitingList VALUES('6666666666','CCC000',1);
-
-INSERT INTO WaitingList VALUES('6666666666','CCC456',1);
 
 
 
@@ -422,3 +411,21 @@ ORDER BY student;
 CREATE OR REPLACE VIEW CourseQueuePositions AS 
 SELECT course, student, w.position as place
 FROM WaitingList w;
+
+
+CREATE OR REPLACE VIEW studentInformation AS
+SELECT idnr as student, b.name, b.login, b.program, b.branch, 
+f.course as readCourses, f.grade as finishedGrade, f.credits as finishedCredits, 
+r.course as regCourses, r.status, 
+    CASE
+        WHEN r.status = 'registered' THEN 0
+        WHEN r.status = 'waiting' THEN c.place
+    END as position,
+p.seminarCourses as seminarCoursePass, 
+p.mathCredits, p.researchCredits, p.totalCredits, p.qualified as canGraduate
+FROM BasicInformation b
+LEFT JOIN FinishedCourses f ON idnr = f.student
+LEFT JOIN Registrations r ON idnr = r.student
+LEFT JOIN CourseQueuePositions c ON r.course = c.course AND r.status = 'waiting' AND idnr = c.student
+LEFT JOIN PathToGraduation p ON idnr = p.student
+ORDER BY idnr;
