@@ -32,12 +32,12 @@ public class TestPortal {
           //Unregister the student from the course, and then unregister him/her again from the same course.
           //Check that the student is no longer registered and that the second unregistration gives an error response.
 
-          System.out.println(c.register("7777777777", "CCC555"));
+          System.out.println(c.unregister("7777777777", "CCC555"));
           System.out.println((c.getInfo("7777777777")));
           //should pass
           pause();
 
-          System.out.println(c.register("7777777777", "CCC555"));
+          System.out.println(c.unregister("7777777777", "CCC555"));
           // Should fail.
           pause();
 
