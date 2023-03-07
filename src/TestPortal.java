@@ -92,7 +92,7 @@ public class TestPortal {
           System.out.println(c.getInfo("6666666666"));
           System.out.println(c.getInfo("7777777777"));
 
-          System.out.println(c.unregister("4444444444", "'1' = '1'" ));
+          System.out.println(c.unregister("4444444444", "x' OR '1'='1" ));
 
           System.out.println(c.getInfo("1111111111"));
           System.out.println(c.getInfo("2222222222"));
