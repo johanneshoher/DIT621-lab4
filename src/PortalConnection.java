@@ -61,6 +61,28 @@ public class PortalConnection {
         }
     }
 
+    // Code below allows for injection into database, not good!!! Only for
+
+    public String unregister(String student, String courseCode) {
+
+        String query = "DELETE FROM Registrations WHERE student='" + student + "' AND course='" + courseCode + "'";
+
+        try (Statement stmt = conn.createStatement()) {
+            int r = stmt.executeUpdate(query);
+            if (r == 0) {
+                return "{\"success\":false, \"error\":\"" + "Couldn't find student as registered or waiting" + "\"}";
+            } else {
+                System.out.println("DELETED " + student + " FROM " + courseCode + " IN Registrations.");
+                return "{\"success\":true}";
+            }
+        } catch (SQLException e) {
+            return "{\"success\":false, \"error\":\"" + getError(e) + "\"}";
+            
+        }
+    }
+
+
+    /*
     // Unregister a student from a course, returns a tiny JSON document (as a String)
     public String unregister(String student, String courseCode) {
 
@@ -80,6 +102,8 @@ public class PortalConnection {
                     return "{\"success\":true}";
                 }
 
+     */
+
 /*
             ResultSet rs = pstmt.executeQuery();
 
@@ -93,11 +117,12 @@ public class PortalConnection {
                 return "{\"student\":\"does not exist :(\"}";
 
 
- */
+ *//*
         } catch (SQLException e) {
             return "{\"success\":false, \"error\":\"" + getError(e) + "\"}";
         }
     }
+    */
 
 
     // Return a JSON document containing lots of information about a student, it should validate against the schema found in information_schema.json
